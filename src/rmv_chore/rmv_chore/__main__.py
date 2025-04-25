@@ -36,7 +36,7 @@ def main():
     finally:
         print("Shutting down node...")
         node.destroy_node()
-        node.__del__()
+        node.stop()
 
     print("End of program")
 

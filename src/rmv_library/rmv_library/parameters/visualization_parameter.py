@@ -27,6 +27,18 @@ from typing import Any
 
 @dataclass
 class VisualizationParameters:
+    """Class to manage the parameters of the visualization.
+    Args:
+        width (int): The width of the visualization window.
+        height (int): The height of the visualization window.
+        fps (int): The frames per second of the visualization.
+        draw_grid (bool): Whether to draw the grid in the visualization.
+        background_color (dict[str, int]): The background color of the visualization.
+        grid_color (dict[str, int]): The color of the grid in the visualization.
+        camera (dict[str, dict[str, Any]]): The camera parameters of the visualization.
+        grid_spacing (float): The spacing of the grid in the visualization.
+    """
+
     _width: int = field(default=100, init=False)
     _height: int = field(default=100, init=False)
     _fps: int = field(default=10, init=False)
@@ -59,9 +71,6 @@ class VisualizationParameters:
                 "grid_spacing": self._grid_spacing,
             }
         }
-
-    def toDict(self) -> dict[str, Any]:
-        return self.__dict__()
 
     def __post_init__(self):
         self._locks = {
@@ -276,3 +285,6 @@ class VisualizationParameters:
     def toggleDrawGrid(self):
         with self._locks["draw_grid"]:
             self._draw_grid = not self._draw_grid
+
+    def toDict(self) -> dict[str, Any]:
+        return self.__dict__()

@@ -27,6 +27,16 @@ from typing import Any
 
 @dataclass
 class FramesParameters:
+    """Class to manage the parameters of the frames.
+    Args:
+        main_frame (str): The main frame of the visualization.
+        sub_frames (list[str]): The list of sub frames to be visualized.
+        show_axes (bool): Whether to show the axes of the frames.
+        show_frame_names (bool): Whether to show the names of the frames.
+        show_connections (bool): Whether to show the connections between the frames.
+        axes_length (float): The length of the axes of the frames.
+        show_sub_frames (bool): Whether to show the sub frames."""
+
     _main_frame: str = field(default="", init=False)
     _sub_frames: list[str] = field(default_factory=list, init=False)
     _show_sub_frames: bool = field(default=True, init=False)
@@ -47,9 +57,6 @@ class FramesParameters:
                 "show_sub_frames": self._show_sub_frames,
             }
         }
-
-    def toDict(self) -> dict[str, Any]:
-        return self.__dict__()
 
     def __post_init__(self):
         self._locks = {
@@ -138,3 +145,6 @@ class FramesParameters:
         if value > 0:
             with self._locks["axes_length"]:
                 self._axes_length = value
+
+    def toDict(self) -> dict[str, Any]:
+        return self.__dict__()

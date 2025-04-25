@@ -45,9 +45,7 @@ from rmv_library import (
 
 
 class Visualization(CameraManager):
-    def __init__(
-        self, node: Node, params: RmvParameters, transform_graph: TransformGraph
-    ):
+    def __init__(self, node: Node, params: RmvParameters):
         """Initializes the visualization object, inheriting from CameraManager, with an option to draw a grid."""
         super().__init__(params.visualization)
         self.image_lock = threading.RLock()
@@ -61,7 +59,6 @@ class Visualization(CameraManager):
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
         )
         self._image = self.resetImage()
-        self.transform_graph = transform_graph
         self.publisher_raw = self.node.create_publisher(Image, "image", qos)
         self.node.get_logger().info("Visualization initialized successfully.")
 
@@ -72,10 +69,10 @@ class Visualization(CameraManager):
                 return None
             return self._image.copy()
 
-    def updateImage(self, markers: list[MarkerRmv]):
+    def updateImage(self, markers: list[MarkerRmv], transform_graph: TransformGraph):
         """Generates an image centered on `main_tf` with a grid in the background."""
         self.resetImage()
-        main_frame = self.transform_graph.main_frame
+        main_frame = transform_graph.main_frame
         if not main_frame:
             return
         axe_length_px = int(
@@ -86,7 +83,7 @@ class Visualization(CameraManager):
             self, self._image, main_frame, self.rmv_params, axes_thickness
         )
         tf_drawer_info: list[TransformDrawerInfo] = (
-            self.transform_graph.getTransformsFromMainFrame()
+            transform_graph.getTransformsFromMainFrame()
         )
 
         for frame in tf_drawer_info:
@@ -134,10 +131,12 @@ class Visualization(CameraManager):
                 self._image, spacing_in_px, color=grid_color, thickness=grid_thickness
             )
 
-    def visualize(self, markers: list[MarkerRmv]) -> None:
+    def visualize(
+        self, markers: list[MarkerRmv], transform_graph: TransformGraph
+    ) -> None:
         image = None
         with self.image_lock:
-            self.updateImage(markers)
+            self.updateImage(markers, transform_graph)
             image = self._image.copy()
 
         if image is not None:

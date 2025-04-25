@@ -26,6 +26,14 @@ from geometry_msgs.msg import Transform, TransformStamped
 
 
 class TransformBase:
+    """Class to manage a Transform.
+       Use as wrapper for ros2 TransformStamped.
+       Evaluate the lifetime of the transform and manage its pose.
+    Args:
+        transform_stamped (TransformStamped): The transform to manage.
+        static (bool): Whether the transform is static or not.
+    """
+
     __expiration_duration = 3.0
 
     def __init__(self, transform_stamped: TransformStamped, static: bool = False):
@@ -34,6 +42,16 @@ class TransformBase:
         self._transform: Transform = transform_stamped.transform
         self._received_time: float = time.time()
         self._static = static
+
+    def __eq__(self, value) -> bool:
+        if isinstance(value, TransformBase):
+            return self.name == value.name and self.parent == value.parent
+        if isinstance(value, TransformStamped):
+            return (
+                self.name == value.child_frame_id
+                and self.parent == value.header.frame_id
+            )
+        return False
 
     @property
     def name(self) -> str:
@@ -62,6 +80,10 @@ class TransformBase:
         )
 
     def update(self, transform_stamped: TransformStamped) -> None:
+        """Update the transform with a new TransformStamped value if the child_id and frame_id match.
+        Args:
+            transform_stamped (TransformStamped): The new transform to update.
+        """
         if not self == transform_stamped:
             print("Error: Trying to update a transform with different name or parent.")
             print(f"Old transform: {self.name} -> {self.parent}")
@@ -72,24 +94,26 @@ class TransformBase:
         self._received_time = time.time()
         self._transform = transform_stamped.transform
 
-    def __eq__(self, value) -> bool:
-        if isinstance(value, TransformBase):
-            return self.name == value.name and self.parent == value.parent
-        if isinstance(value, TransformStamped):
-            return (
-                self.name == value.child_frame_id
-                and self.parent == value.header.frame_id
-            )
-        return False
-
 
 class TransformDrawerInfo:
+    """Class to manage the information to draw a transform.
+       Allows to manage the pose of the transform in the main frame.
+    Args:
+        Transform_base (TransformBase): The transform to manage.
+    """
+
     def __init__(self, Transform_base: TransformBase):
         self._main_frame: str = ""
         self._pose_in_main_frame: Transform = Transform()
         self._start_connection: Transform = Transform()
         self._end_connection: Transform = Transform()
         self.__associated_transform: TransformBase = Transform_base
+
+    def __str__(self) -> str:
+        return f"Main frame: {self._main_frame}, Start connection: {self._start_connection.translation}, End connection: {self._end_connection.translation}"
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def transform_name(self) -> str:
@@ -120,6 +144,7 @@ class TransformDrawerInfo:
         return self.__associated_transform.opacity
 
     def toDraw(self, main_frame) -> bool:
+        """Check if the transform should be drawn in the main frame."""
         return (
             self._main_frame == main_frame
         ) and not self.__associated_transform.isExpired
@@ -131,23 +156,31 @@ class TransformDrawerInfo:
         start_connection: Transform,
         end_connection: Transform,
     ) -> None:
+        """Update drawing information"""
         self._main_frame = main_frame
         self._pose_in_main_frame = pose_in_main_frame
         self._start_connection = start_connection
         self._end_connection = end_connection
 
-    def __str__(self) -> str:
-        return f"Main frame: {self._main_frame}, Start connection: {self._start_connection.translation}, End connection: {self._end_connection.translation}"
-
-    def __repr__(self):
-        return self.__str__()
-
 
 class RmvTransform(TransformBase):
+    """Class to manage a Transform with additional information for visualization.
+       Inherits from TransformBase and adds information for drawing the transform.
+    Args:
+        transform_stamped (TransformStamped): The transform to manage.
+        static (bool): Whether the transform is static or not.
+    """
+
     def __init__(self, transform_stamped: TransformStamped, static: bool):
         super().__init__(transform_stamped, static)
         self._drawer_info = TransformDrawerInfo(self)
         self._initial_direction = True
+
+    def __eq__(self, value) -> bool:
+        return super().__eq__(value)
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.parent))
 
     @property
     def drawer_info(self) -> TransformDrawerInfo:
@@ -163,9 +196,3 @@ class RmvTransform(TransformBase):
         self._drawer_info.update(
             main_frame, pose_in_main_frame, start_connection, end_connection
         )
-
-    def __eq__(self, value) -> bool:
-        return super().__eq__(value)
-
-    def __hash__(self) -> int:
-        return hash((self.name, self.parent))

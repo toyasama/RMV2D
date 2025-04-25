@@ -42,11 +42,9 @@ class RMVChoreNode(Node):
         paremeter_file = self.getParametersFile()
         self.parameters = RmvParameters(str(paremeter_file))
         self.tf_manager = TFManager(self, self.parameters)
-        self.markers_handler = MarkersHandler(self)
+        self.markers_handler = MarkersHandler()
         self.destroyed = False
-        self.visualization = Visualization(
-            self, self.parameters, self.tf_manager.transform_graph
-        )
+        self.visualization = Visualization(self, self.parameters)
         self.topic_manager = TopicManager(self, self.markers_handler)
         self.period = 1 / self.parameters.visualization.fps
         self.create_timer(self.period, self.visualize)
@@ -56,12 +54,12 @@ class RMVChoreNode(Node):
         parent_dir = Path(__file__).resolve().parents[1]
         return parent_dir / "config" / "params.yml"
 
-    def __del__(self):
+    def stop(self):
         if self.destroyed:
             return
         self.get_logger().info("Destroying RMV Chore node...")
-        self.tf_manager.__del__()
-        self.markers_handler.__del__()
+        self.tf_manager.stop()
+        self.markers_handler.stop()
         self.get_logger().info("RMV Chore node destroyed successfully.")
         self.destroyed = True
 
@@ -96,4 +94,4 @@ class RMVChoreNode(Node):
             markers,
             self.tf_manager.transform_graph.getTransformsFromMainFrame(),
         )
-        self.visualization.visualize(markers)
+        self.visualization.visualize(markers, self.tf_manager.transform_graph)

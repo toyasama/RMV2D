@@ -26,23 +26,45 @@ from geometry_msgs.msg import Pose
 from visualization_msgs.msg import Marker
 
 
-class MarkerRmvBase:
+class MarkerRmv:
+    """Class to manage a Marker.
+       Use as wrapper for ros2 Marker.
+       Evaluate the lifetime of the marker and manage its pose.
+    Args:
+        marker (Marker): The marker to manage.
+        current_time (Time): The time at which the marker was received.
+    """
 
     def __init__(self, marker: Marker, reception_time: Time):
         self._marker = marker
-        self._pub_time = reception_time
+        self._reception_time = reception_time
         self._modified_pose = None
+
+    def __eq__(self, value):
+        if not isinstance(value, MarkerRmv):
+            return False
+        return self.identifier == value.identifier
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     @property
     def identifier(self) -> tuple:
+        """Marker identifier. Defines as a tuple of namespace and id."""
         return self._marker.ns, self._marker.id
 
     @property
     def pose(self) -> Pose:
+        """Pose of the marker."""
         return self._marker.pose
 
     @property
     def modified_pose(self) -> Pose:
+        """
+        Modified pose of the marker. If not modified, return the original pose.
+        Useful for visualization purposes.
+        Modified pose is set as the pose in anothercoordinate frame.
+        """
         return self._modified_pose if self._modified_pose else self.pose
 
     @modified_pose.setter
@@ -51,18 +73,22 @@ class MarkerRmvBase:
 
     @property
     def scale(self):
+        """Scale of the marker."""
         return self._marker.scale
 
     @property
     def color(self):
+        """Color of the marker."""
         return self._marker.color
 
     @property
     def lifetime(self):
+        """Lifetime of the marker."""
         return self._marker.lifetime
 
     @property
     def frame_id(self) -> str:
+        """Frame ID of the marker."""
         return self._marker.header.frame_id
 
     @frame_id.setter
@@ -71,32 +97,29 @@ class MarkerRmvBase:
 
     @property
     def points(self):
+        """Points of the marker."""
         return self._marker.points
 
     @property
     def type(self):
+        """Type of the marker."""
         return self._marker.type
 
-    def getTransform(self):
-        return self._marker.pose
-
     def isExpired(self, current_time: Time) -> bool:
+        """
+        Check if the marker is expired.
+        The marker is considered expired if the current time exceeds the
+        sum of the lifetime and the time at which it was received.
+        Args:
+            current_time (Time): The current time to check against the marker's lifetime.
+        Returns:
+            bool: True if the marker is expired, False otherwise.
+        """
         expiration_time = (
             self.lifetime.sec
             + (self.lifetime.nanosec * 1e-9)
-            + self._pub_time.sec
-            + (self._pub_time.nanosec * 1e-9)
+            + self._reception_time.sec
+            + (self._reception_time.nanosec * 1e-9)
         )
         current_time_in_seconds = current_time.sec + (current_time.nanosec * 1e-9)
         return current_time_in_seconds > expiration_time
-
-
-class MarkerRmv(MarkerRmvBase):
-
-    def __init__(self, marker: Marker, current_time: Time):
-        super().__init__(marker, current_time)
-
-    def __eq__(self, value):
-        if not isinstance(value, MarkerRmv):
-            return False
-        return self.identifier == value.identifier

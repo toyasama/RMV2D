@@ -35,30 +35,38 @@ qos_profile_transient = QoSProfile(
 
 
 class TFManager:
+    """
+    Class to manage the TF (Transform) messages in ROS2.
+    It subscribes to the TF and TF static topics and updates the transform graph accordingly.
+    Args:
+        node (Node): The ROS2 node to which the TFManager is attached.
+        parameters (RmvParameters): The parameters for the RMV library.
+    """
+
     def __init__(self, node: Node, parameters: RmvParameters) -> None:
         super().__init__()
         self.node = node
 
         self._transform_graph = TransformGraph(parameters)
 
-        self.node.create_subscription(TFMessage, "/tf", self.tfCallback, 10)
+        self.node.create_subscription(TFMessage, "/tf", self._tfCallback, 10)
         self.node.create_subscription(
-            TFMessage, "/tf_static", self.tfStaticCallback, qos_profile_transient
+            TFMessage, "/tf_static", self._tfStaticCallback, qos_profile_transient
         )
 
         self.node.get_logger().info("TFManager initialized successfully.")
 
-    def __del__(self):
-        self.transform_graph.__del__()
+    def stop(self):
+        self._transform_graph.stop()
 
     @property
     def transform_graph(self) -> TransformGraph:
         return self._transform_graph
 
-    def tfCallback(self, msg: TFMessage) -> None:
+    def _tfCallback(self, msg: TFMessage) -> None:
         for transform in msg.transforms:
             self.transform_graph.addTransform(transform, static=False)
 
-    def tfStaticCallback(self, msg: TFMessage) -> None:
+    def _tfStaticCallback(self, msg: TFMessage) -> None:
         for transform in msg.transforms:
             self.transform_graph.addTransform(transform, static=True)

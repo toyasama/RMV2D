@@ -32,10 +32,16 @@ from .visualization_parameter import VisualizationParameters
 
 @dataclass
 class RmvParameters:
+    """
+    Class to manage the parameters of the RMV library.
+    It loads the parameters from a YAML file and provides methods to access and modify them.
+    Args:
+        path (str): Path to the YAML file containing the parameters.
+    """
+
     def __init__(self, path: str):
         self.__path = path
         data = self._loadYaml()
-        print(data)
 
         self.visualization = VisualizationParameters()
         self.frames = FramesParameters()
@@ -46,13 +52,17 @@ class RmvParameters:
         self._update_visualization(visualization_data)
         self._update_frames(frames_data)
 
+    def save(self):
+        """Save the current data to the YAML file."""
+        self._saveYaml()
+
+    def _convertData(self, data: Any) -> Any:
+        if isinstance(data, str):
+            if data.lower() in ["true", "false"]:
+                return data.lower() == "true"
+        return data
+
     def _loadYaml(self) -> dict:
-        """Load the YAML file and apply default values if necessary.
-
-        Returns:
-            The loaded data as a dictionary.
-
-        """
         if not os.path.exists(self.__path):
             print(f"File {self.__path} not found, creating an empty file.")
             return {}
@@ -67,7 +77,6 @@ class RmvParameters:
         return self._applyDefaults(data)
 
     def _applyDefaults(self, data: dict) -> dict:
-        """Apply default values if some keys are missing."""
         defaults = {
             "RMV": {
                 "visualizations": {},
@@ -77,7 +86,6 @@ class RmvParameters:
         return self._mergeDefaults(defaults, data)
 
     def _mergeDefaults(self, defaults: dict, data: dict) -> dict:
-        """Merge default values with those loaded from the file."""
         if isinstance(defaults, dict) and isinstance(data, dict):
             for key, value in defaults.items():
                 if key not in data:
@@ -85,13 +93,7 @@ class RmvParameters:
                     data[key] = value
                 else:
                     data[key] = self._mergeDefaults(value, data[key])
-        return self.convertData(data)
-
-    def convertData(self, data: Any) -> Any:
-        if isinstance(data, str):
-            if data.lower() in ["true", "false"]:
-                return data.lower() == "true"
-        return data
+        return self._convertData(data)
 
     def _update_visualization(self, data: dict[str, Any]) -> None:
         if "width" in data:
@@ -146,27 +148,6 @@ class RmvParameters:
                 else None
             )
 
-    def get(self, *keys):
-        """Retrieve a value from the given keys."""
-        value = self.data
-        for key in keys:
-            if key in value:
-                value = value[key]
-            else:
-                print(f"Key {'.'.join(keys)} not found, returning default value.")
-                return None
-        return value
-
-    def set(self, value, *keys):
-        """Update a value and save it to the YAML file."""
-        d = self.data
-        for key in keys[:-1]:
-            if key not in d:
-                d[key] = {}
-            d = d[key]
-        d[keys[-1]] = value
-        self._saveYaml()
-
     def _saveYaml(self):
         """Save the updated data to the YAML file."""
         try:
@@ -180,7 +161,3 @@ class RmvParameters:
             print(f"Error writing to the file: {e}")
             return
         print("Data saved successfully.")
-
-    def save(self):
-        """Save the current data to the YAML file."""
-        self._saveYaml()

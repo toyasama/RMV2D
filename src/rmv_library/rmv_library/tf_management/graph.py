@@ -47,11 +47,13 @@ class BaseGraph(ABC):
         self._worker_thread = Thread(target=self._workerLoop, daemon=True)
         self._worker_thread.start()
 
-    def __del__(self):
-        print("Terminating graph worker thread...")
+    def stop(self):
+        if not self._running:
+            return
+        """Stop the worker thread."""
         self._running = False
         self._worker_thread.join()
-        print("Graph worker thread terminated.")
+        print("Graph worker thread stopped.")
 
     def _workerLoop(self):
         """Continuous worker loop handling updates and removals."""
@@ -77,17 +79,44 @@ class BaseGraph(ABC):
 
 
 class TransformGraph(BaseGraph):
+    """Graph managing transforms between frames as a directed graph.
+    Transforms are stored as edges with associated metadata.
+    They always are stored in both directions (parent -> child and child -> parent).
+    """
 
     def __init__(self, rmv_params: RmvParameters):
         super().__init__(rmv_params)
 
-    def __del__(self):
-        return super().__del__()
+    @property
+    def frames(self) -> list[str]:
+        """Retrieve all frames in the graph."""
+        with self._graph_lock:
+            return list(self._graph.nodes)
 
-    """Graph that manages frame transforms."""
+    @property
+    def sub_frames(self) -> list[str]:
+        """Retrieve all sub frames in the graph."""
+        with self._graph_lock:
+            frames = list(self._graph.nodes)
+            if self._main_frame in frames:
+                frames.remove(self._main_frame)
+            return frames
 
-    def addTransform(self, transform_stamped: TransformStamped, static: bool = False):
-        """Add a transform to the graph from a TransformStamped message."""
+    @property
+    def main_frame(self):
+        with self._lock_main_frame:
+            return str(self._main_frame) if self._main_frame in self._graph else None
+
+    def addTransform(
+        self, transform_stamped: TransformStamped, static: bool = False
+    ) -> None:
+        """New transform is added to the graph with metadata.
+        The transform is stored in both directions (parent -> child and child -> parent).
+        if the transform already exists, it is updated for both directions.
+        Args:
+            transform_stamped (TransformStamped): The transform to add.
+            static (bool): Whether the transform is static or dynamic.
+        """
         parent_frame = transform_stamped.header.frame_id
         child_frame = transform_stamped.child_frame_id
 
@@ -97,20 +126,37 @@ class TransformGraph(BaseGraph):
                     transform_stamped
                 )
                 self._graph[child_frame][parent_frame]["frameInfo"].update(
-                    self.inverseTransformMsg(transform_stamped)
+                    self._inverseTransformMsg(transform_stamped)
                 )
                 return
 
         forward_transform = RmvTransform(transform_stamped, static)
         inverse_transform = RmvTransform(
-            self.inverseTransformMsg(transform_stamped), static
+            self._inverseTransformMsg(transform_stamped), static
         )
 
         with self._graph_lock:
             self._graph.add_edge(parent_frame, child_frame, frameInfo=forward_transform)
             self._graph.add_edge(child_frame, parent_frame, frameInfo=inverse_transform)
 
-    def inverseTransformMsg(
+    def getTransform(self, parent: str, child: str) -> Transform | None:
+        """Retrieve the transform between two frames."""
+        with self._graph_lock:
+            edge_data = self._graph.get_edge_data(parent, child)
+            return edge_data["frameInfo"].transform if edge_data else None
+
+    def getTransformsFromMainFrame(self) -> list[TransformDrawerInfo]:
+        """Get all transforms from the main frame."""
+        drawer_list = []
+        with self._graph_lock:
+            for parent, child in self._graph.edges:
+                edge_data: RmvTransform = self._graph[parent][child]["frameInfo"]
+
+                if edge_data.drawer_info.main_frame == self._main_frame:
+                    drawer_list.append(edge_data.drawer_info)
+            return drawer_list
+
+    def _inverseTransformMsg(
         self, transform_stamped: TransformStamped
     ) -> TransformStamped:
         """Compute the inverse of a TransformStamped."""
@@ -121,12 +167,6 @@ class TransformGraph(BaseGraph):
         inverse_transform_stamped.header.stamp = transform_stamped.header.stamp
         inverse_transform_stamped.transform = inverse_transform
         return inverse_transform_stamped
-
-    def getTransform(self, parent: str, child: str) -> Transform | None:
-        """Retrieve the transform between two frames."""
-        with self._graph_lock:
-            edge_data = self._graph.get_edge_data(parent, child)
-            return edge_data["frameInfo"].transform if edge_data else None
 
     def _update(self):
         """Periodically update transforms and evaluate transforms from the main frame."""
@@ -191,34 +231,3 @@ class TransformGraph(BaseGraph):
                 else transform
             )
         return current_transform
-
-    @property
-    def frames(self) -> list[str]:
-        """Retrieve all frames in the graph."""
-        with self._graph_lock:
-            return list(self._graph.nodes)
-
-    @property
-    def sub_frames(self) -> list[str]:
-        """Retrieve all sub frames in the graph."""
-        with self._graph_lock:
-            frames = list(self._graph.nodes)
-            if self._main_frame in frames:
-                frames.remove(self._main_frame)
-            return frames
-
-    @property
-    def main_frame(self):
-        with self._lock_main_frame:
-            return str(self._main_frame) if self._main_frame in self._graph else None
-
-    def getTransformsFromMainFrame(self) -> list[TransformDrawerInfo]:
-        """Get all transforms from the main frame."""
-        drawer_list = []
-        with self._graph_lock:
-            for parent, child in self._graph.edges:
-                edge_data: RmvTransform = self._graph[parent][child]["frameInfo"]
-
-                if edge_data.drawer_info.main_frame == self._main_frame:
-                    drawer_list.append(edge_data.drawer_info)
-            return drawer_list
