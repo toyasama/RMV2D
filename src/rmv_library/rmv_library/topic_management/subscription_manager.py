@@ -30,13 +30,14 @@ from ..markers_management.marker_handler import MarkersHandler
 
 
 class SubscriptionManager:
+    """Manager for handling topic __subscriptions.
+
+    Args:
+        node (Node): The ROS2 node object.
+
+    """
+
     def __init__(self, node: Node, markers_handler: MarkersHandler):
-        """Manager for handling topic __subscriptions.
-
-        Args:
-            node (Node): The ROS2 node object.
-
-        """
         self._node = node
         self.__subscriptions: dict[str, Subscription] = {}
         self.marker_handler = markers_handler
@@ -75,7 +76,6 @@ class SubscriptionManager:
 
         """
         self.marker_handler.addMarker(message)
-        # self.timer_logger.logExecutionTime(self.addMarker)(message)
 
     def unsubscribe(self, topic: str):
         """Unsubscribe from a topic.

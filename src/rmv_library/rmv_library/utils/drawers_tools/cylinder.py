@@ -61,7 +61,7 @@ class CylinderDrawer:
         top_camera = camera_manager.worldToCamera(top_center)
         bottom_camera = camera_manager.worldToCamera(bottom_center)
 
-        if top_camera[2] > 0 and bottom_camera[2] > 0:
+        if top_camera[2] > 0 or bottom_camera[2] > 0:
             top_image = camera_manager.projectToImage(top_camera)
             bottom_image = camera_manager.projectToImage(bottom_camera)
 

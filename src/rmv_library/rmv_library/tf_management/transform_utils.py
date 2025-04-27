@@ -20,11 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from numpy.typing import NDArray
 import tf_transformations as tf
 from geometry_msgs.msg import Pose, Transform
 
 
 class TransformUtils:
+    """
+    Utility class for handling transformations and poses of TF frames.
+    This class provides methods to convert between transformation matrices and
+    ROS messages, as well as to combine and invert transformations.
+    It also provides methods to transform poses between different frames.
+    """
+
     @staticmethod
     def invertTransform(transform: Transform) -> Transform:
         """Compute the inverse of a given transform.
@@ -84,8 +92,12 @@ class TransformUtils:
         return TransformUtils.matrixToTransform(combined_matrix)
 
     @staticmethod
-    def transformToMatrix(transform: Transform):
-        """Convert a Transform into a transformation matrix."""
+    def transformToMatrix(transform: Transform) -> NDArray[any]:
+        """Convert a Transform into a transformation matrix.
+        Args:
+            transform (Transform): The Transform to convert.
+        Returns:
+            numpy.ndarray: The 4x4 transformation matrix."""
         matrix = tf.translation_matrix(
             [transform.translation.x, transform.translation.y, transform.translation.z]
         )
@@ -100,7 +112,11 @@ class TransformUtils:
 
     @staticmethod
     def matrixToTransform(matrix) -> Transform:
-        """Convert a transformation matrix back into a Transform."""
+        """Convert a transformation matrix back into a Transform object.
+        Args:
+            matrix (numpy.ndarray): The 4x4 transformation matrix.
+        Returns:
+            Transform: The corresponding Transform object."""
         transform = Transform()
         translation = tf.translation_from_matrix(matrix)
         rotation = tf.quaternion_from_matrix(matrix)
@@ -116,7 +132,7 @@ class TransformUtils:
         return transform
 
     @staticmethod
-    def poseToMatrix(pose: Pose):
+    def poseToMatrix(pose: Pose) -> NDArray[any]:
         """Convert a Pose into a transformation matrix.
 
         Args:
@@ -134,7 +150,6 @@ class TransformUtils:
             pose.orientation.w,
         ]
 
-        # Create transformation matrix
         matrix = tf.translation_matrix(position)
         matrix[:3, :3] = tf.quaternion_matrix(orientation)[:3, :3]
         return matrix

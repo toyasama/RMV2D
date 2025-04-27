@@ -40,8 +40,12 @@ class GridDrawer:
 
         max_x_m = camera_manager.camera_distance * np.tan(camera_manager.fov / 2)
         max_y_m = max_x_m * (height / width)
-
+        if spacing_m <= 0:
+            return
         x = 0
+        # TODO: Using a while loop can be a source of performance issues, consider using a for loop instead.
+        # Or evaluate the number of iterations and use a for loop with a range.
+
         while x < max_x_m:
             for sign in [-1, 1]:
                 x_m = x * sign

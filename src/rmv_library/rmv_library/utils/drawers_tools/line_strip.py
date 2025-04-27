@@ -61,7 +61,7 @@ class LineStripDrawer:
         projected_points = []
         for p in transformed_points:
             camera_coords = camera_manager.worldToCamera(p)
-            if camera_coords[2] > 0:  # Vérifier que le point est devant la caméra
+            if camera_coords[2] > 0:
                 image_point = camera_manager.projectToImage(camera_coords)
                 if image_point is not None:
                     projected_points.append(image_point)

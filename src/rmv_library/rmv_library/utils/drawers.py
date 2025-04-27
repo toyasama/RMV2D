@@ -55,7 +55,7 @@ class DrawFrame:
         )
         proj = camera_manager.projectToImage(camera_manager.worldToCamera(frame_pos))
         frames_position = FramesPosition(main_tf, proj, proj_x_end, proj_y_end, 1)
-        if proj:
+        if proj.any():
             DrawFrame.drawFrame(image, frames_position, parameters, thickness)
 
     @staticmethod
@@ -65,7 +65,7 @@ class DrawFrame:
         transform_info: TransformDrawerInfo,
         parameters: RmvParameters,
         thickness: int,
-    ) -> FramesPosition:
+    ) -> None:
         """Projects a 3D point to the image plane using the intrinsic matrix.
 
         Args:
@@ -150,7 +150,7 @@ class DrawFrame:
             proj_start_connection,
             proj_end_connection,
         )
-        if proj:
+        if proj.any():
             DrawFrame.drawFrame(image, frames_position, parameters, thickness)
         else:
             print("Frame not in view")
@@ -176,7 +176,10 @@ class DrawFrame:
                 thickness=thickness,
             )
 
-        if frames_position.start_connection and frames_position.end_connection:
+        if (
+            frames_position.start_connection.any()
+            and frames_position.end_connection.any()
+        ):
             DrawFrame.drawArrow(
                 image,
                 frames_position.start_connection,
@@ -291,7 +294,7 @@ class DrawFrame:
         opacity: float = 1.0,
     ) -> None:
         """Draw an arrow with optional opacity and ROI."""
-        if opacity < 1.0:
+        if opacity < 1.0 and opacity > 0:
             overlay = image.copy()
             cv2.arrowedLine(
                 overlay,

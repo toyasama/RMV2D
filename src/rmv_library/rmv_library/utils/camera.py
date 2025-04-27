@@ -28,7 +28,11 @@ from ..parameters.params import VisualizationParameters
 
 
 class CameraExtrinsics:
-    """Extrinsic parameters of the camera."""
+    """Extrinsic parameters of the camera.
+    Args:
+        params (VisualizationParameters): Visualization parameters containing camera position and orientation.
+
+    """
 
     def __init__(self, params: VisualizationParameters):
         self.params = params
@@ -53,7 +57,11 @@ class CameraExtrinsics:
 
 
 class CameraIntrinsics:
-    """Intrinsic parameters of the camera."""
+    """Intrinsic parameters of the camera.
+    Args:
+        params (VisualizationParameters): Visualization parameters containing camera resolution and field of view.
+
+    """
 
     def __init__(self, params: VisualizationParameters):
         self.params = params
@@ -110,3 +118,8 @@ class CameraManager:
     def camera_distance(self) -> float:
         """Gets the distance between the camera and the origin."""
         return self.__extrinsics.extrinsic_matrix[2, 3]
+
+    @property
+    def extrinsic_matrix(self) -> np.ndarray:
+        """Gets the extrinsic transformation matrix."""
+        return self.__extrinsics.extrinsic_matrix
