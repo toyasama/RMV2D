@@ -1,4 +1,4 @@
-name: CI Tests
+name: ROS2 Python Tests
 
 on:
   pull_request:
@@ -6,9 +6,24 @@ on:
       - main
 
 jobs:
-  test:
+  test-python:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Run tests
-        run: echo "Running tests..."
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-timeout
+
+      - name: Run all Python tests
+        run: |
+          cd src
+          pytest --maxfail=1 --disable-warnings --exitfirst --verbose
