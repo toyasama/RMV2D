@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pathlib import Path
-
+import os
+from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 
 from rmv_library import (
@@ -51,8 +51,9 @@ class RMVChoreNode(Node):
         self.get_logger().info("RMV Chore node initialized successfully.")
 
     def getParametersFile(self):
-        parent_dir = Path(__file__).resolve().parents[1]
-        return parent_dir / "config" / "params.yml"
+        return os.path.join(
+            get_package_share_directory("rmv_chore"), "config", "params.yml"
+        )
 
     def stop(self):
         if self.destroyed:
