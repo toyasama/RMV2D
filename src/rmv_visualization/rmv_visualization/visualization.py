@@ -130,6 +130,7 @@ class Visualization(CameraManager):
             DrawFrame.drawGrid(
                 self._image, spacing_in_px, color=grid_color, thickness=grid_thickness
             )
+        return self._image
 
     def visualize(
         self, markers: list[MarkerRmv], transform_graph: TransformGraph

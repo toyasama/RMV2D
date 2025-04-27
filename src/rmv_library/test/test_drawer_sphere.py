@@ -70,6 +70,7 @@ def blank_image():
 # --- TESTS ---
 
 
+@pytest.mark.timeout(5)
 def testDrawSimpleSphere(blank_image, camera_manager):
     marker = DummyMarkerRmv(
         position=DummyPosition(0, 0, 0),
@@ -83,6 +84,7 @@ def testDrawSimpleSphere(blank_image, camera_manager):
     assert np.any(np.all(blank_image == [0, 0, 255], axis=-1))
 
 
+@pytest.mark.timeout(5)
 def testDrawSphereBehindCamera(blank_image, camera_manager):
     marker = DummyMarkerRmv(
         position=DummyPosition(0, 0, 10),
@@ -95,6 +97,7 @@ def testDrawSphereBehindCamera(blank_image, camera_manager):
     assert not np.any(np.all(blank_image == [0, 255, 0], axis=-1))
 
 
+@pytest.mark.timeout(5)
 def testDrawEllipseNotCircular(blank_image, camera_manager):
     marker = DummyMarkerRmv(
         position=DummyPosition(0, 0, 0),

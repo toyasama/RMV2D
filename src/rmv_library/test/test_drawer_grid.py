@@ -21,6 +21,7 @@ def empty_image():
     return np.zeros((800, 600, 3), dtype=np.uint8)
 
 
+@pytest.mark.timeout(5)
 def testDrawGridWithDefaultSpacingAndColor(camera_manager, empty_image):
     image = empty_image.copy()
     GridDrawer.drawGrid(image, camera_manager)
@@ -29,6 +30,7 @@ def testDrawGridWithDefaultSpacingAndColor(camera_manager, empty_image):
     assert np.any(image)
 
 
+@pytest.mark.timeout(5)
 def testDrawGridWithCustomSpacingAndColor(camera_manager, empty_image):
     image = empty_image.copy()
     GridDrawer.drawGrid(image, camera_manager, spacing_m=2.0, color=(0, 255, 0))
@@ -37,6 +39,7 @@ def testDrawGridWithCustomSpacingAndColor(camera_manager, empty_image):
     assert np.any(image)
 
 
+@pytest.mark.timeout(5)
 def testDrawGridWithZeroSpacing(camera_manager, empty_image):
     image = empty_image.copy()
     GridDrawer.drawGrid(image, camera_manager, spacing_m=0.0)
@@ -44,6 +47,7 @@ def testDrawGridWithZeroSpacing(camera_manager, empty_image):
     assert not np.any(image)
 
 
+@pytest.mark.timeout(5)
 def testDrawGridWithNegativeSpacing(camera_manager, empty_image):
     image = empty_image.copy()
     GridDrawer.drawGrid(image, camera_manager, spacing_m=-1.0)

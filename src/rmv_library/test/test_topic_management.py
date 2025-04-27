@@ -26,11 +26,13 @@ def topicManager(mockNode, mockMarkerHandler):
     return TopicManager(mockNode, mockMarkerHandler)
 
 
+@pytest.mark.timeout(5)
 def testInitialization(topicManager, mockNode):
     mockNode.create_timer.assert_called_once()
     mockNode.get_logger().info.assert_called_with("TopicManager created successfully")
 
 
+@pytest.mark.timeout(5)
 def testHasMatchingTypeMatch(topicManager):
     received = ["std_msgs/msg/String", "visualization_msgs/msg/Marker"]
     expected = ["visualization_msgs/msg/Marker", "visualization_msgs/msg/MarkerArray"]
@@ -38,6 +40,7 @@ def testHasMatchingTypeMatch(topicManager):
     assert match == "visualization_msgs/msg/Marker"
 
 
+@pytest.mark.timeout(5)
 def testHasMatchingTypeNoMatch(topicManager):
     received = ["std_msgs/msg/String", "geometry_msgs/msg/Pose"]
     expected = ["visualization_msgs/msg/Marker", "visualization_msgs/msg/MarkerArray"]
@@ -45,16 +48,19 @@ def testHasMatchingTypeNoMatch(topicManager):
     assert match is None
 
 
+@pytest.mark.timeout(5)
 def testHasPublisherTrue(topicManager, mockNode):
     mockNode.count_publishers.return_value = 1
     assert topicManager._hasPublisher("some_topic") is True
 
 
+@pytest.mark.timeout(5)
 def testHasPublisherFalse(topicManager, mockNode):
     mockNode.count_publishers.return_value = 0
     assert topicManager._hasPublisher("some_topic") is False
 
 
+@pytest.mark.timeout(5)
 def testFilterTopicsWithMatchingAndPublishers(topicManager, mockNode):
     topics = [
         ("topic1", ["visualization_msgs/msg/Marker"]),
@@ -78,6 +84,7 @@ def testFilterTopicsWithMatchingAndPublishers(topicManager, mockNode):
     ]
 
 
+@pytest.mark.timeout(5)
 def testSubscribeToTopics(topicManager):
     topicManager.subscribe = MagicMock()
     topics = [
@@ -92,6 +99,7 @@ def testSubscribeToTopics(topicManager):
     assert topicManager.subscribe.call_count == 2
 
 
+@pytest.mark.timeout(5)
 def testRemoveUnpublishedTopics(topicManager):
     # Simuler l'état actuel
     topicManager._SubscriptionManager__subscriptions = {
@@ -110,6 +118,7 @@ def testRemoveUnpublishedTopics(topicManager):
     assert topicManager.unsubscribe.call_count == 2
 
 
+@pytest.mark.timeout(5)
 def testFindMarkersTopicsCallsAllInternals(topicManager, mockNode):
     topicManager._filter = MagicMock(
         return_value=[("topic1", "visualization_msgs/msg/Marker")]

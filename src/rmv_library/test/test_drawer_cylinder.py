@@ -76,6 +76,7 @@ def blank_image():
 # ------------------ TESTS CylinderDrawer ------------------
 
 
+@pytest.mark.timeout(5)
 def testDrawCylinderSimple(blank_image, sample_camera_manager):
     position = MockPosition(0, 0, 0)
     orientation = MockOrientation(0, 0, 0, 1)
@@ -89,6 +90,7 @@ def testDrawCylinderSimple(blank_image, sample_camera_manager):
     assert np.any(blank_image[:, :, 2] > 0)
 
 
+@pytest.mark.timeout(5)
 def testDrawCylinderFlat(blank_image, sample_camera_manager):
     position = MockPosition(0, 0, 0)
     orientation = MockOrientation(0, 0, 0, 1)
@@ -102,6 +104,7 @@ def testDrawCylinderFlat(blank_image, sample_camera_manager):
     assert np.any(blank_image[:, :, 1] > 0)
 
 
+@pytest.mark.timeout(5)
 def testDrawCylinderLarge(blank_image, sample_camera_manager):
     position = MockPosition(0, 0, 5)
     orientation = MockOrientation(0, 0, 0, 1)
@@ -115,6 +118,7 @@ def testDrawCylinderLarge(blank_image, sample_camera_manager):
     assert np.any(blank_image[:, :, 0] > 0)
 
 
+@pytest.mark.timeout(5)
 def testDrawCylinderTiny(blank_image, sample_camera_manager):
     position = MockPosition(0, 0, 0)
     orientation = MockOrientation(0, 0, 0, 1)
@@ -128,6 +132,7 @@ def testDrawCylinderTiny(blank_image, sample_camera_manager):
     assert np.any(blank_image[:, :, :2] > 0)
 
 
+@pytest.mark.timeout(5)
 def testDrawCylinderInvisible(blank_image, sample_camera_manager):
     position = MockPosition(0, 0, -20)
     orientation = MockOrientation(0, 0, 0, 1)

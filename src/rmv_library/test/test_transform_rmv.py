@@ -24,6 +24,7 @@ def makeSampleTransform(x=1.0, y=2.0, z=3.0, qw=1.0):
     return t
 
 
+@pytest.mark.timeout(5)
 def testTransformBaseDynamicExpiration():
     tf = makeTransformStamped()
     transform = TransformBase(tf, static=False)
@@ -37,6 +38,7 @@ def testTransformBaseDynamicExpiration():
     assert transform.isExpired is True
 
 
+@pytest.mark.timeout(5)
 def testTransformBaseStaticNeverExpires():
     tf = makeTransformStamped()
     transform = TransformBase(tf, static=True)
@@ -46,6 +48,7 @@ def testTransformBaseStaticNeverExpires():
     assert transform.isExpired is False
 
 
+@pytest.mark.timeout(5)
 def testTransformBaseUpdateValid():
     tf = makeTransformStamped()
     transform = TransformBase(tf)
@@ -58,6 +61,7 @@ def testTransformBaseUpdateValid():
     assert transform.opacity > 0.9
 
 
+@pytest.mark.timeout(5)
 def testTransformBaseUpdateInvalid(capfd):
     tf = makeTransformStamped("world", "camera")
     transform = TransformBase(tf)
@@ -70,6 +74,7 @@ def testTransformBaseUpdateInvalid(capfd):
     assert transform.transform.translation.x == 1.0
 
 
+@pytest.mark.timeout(5)
 def testTransformBaseEquality():
     tf1 = makeTransformStamped("world", "camera")
     tf2 = makeTransformStamped("world", "camera")
@@ -85,6 +90,7 @@ def testTransformBaseEquality():
     assert t1 != tf3
 
 
+@pytest.mark.timeout(5)
 def testDrawerInfoToDraw():
     tf = makeTransformStamped()
     transform = TransformBase(tf)
@@ -99,6 +105,7 @@ def testDrawerInfoToDraw():
     assert drawer_info.toDraw("world") is False
 
 
+@pytest.mark.timeout(5)
 def testRmvTransformIntegration():
     tf = makeTransformStamped()
     rmv = RmvTransform(tf, static=True)

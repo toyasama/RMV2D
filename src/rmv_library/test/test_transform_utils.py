@@ -44,7 +44,7 @@ def another_transform():
     return t
 
 
-# ----------- Tests -----------
+@pytest.mark.timeout(5)  # ----------- Tests -----------
 def testInvertTransformIdentity(identity_transform):
     inverted = TransformUtils.invertTransform(identity_transform)
     assert np.allclose(
@@ -62,6 +62,7 @@ def testInvertTransformIdentity(identity_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testInvertTransformSimple(simple_transform):
     inverted = TransformUtils.invertTransform(simple_transform)
     double_inverted = TransformUtils.invertTransform(inverted)
@@ -95,6 +96,7 @@ def testInvertTransformSimple(simple_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testInvertTransformRandom(another_transform):
     inverted = TransformUtils.invertTransform(another_transform)
     combined = TransformUtils.combineTransforms(another_transform, inverted)
@@ -116,6 +118,7 @@ def testInvertTransformRandom(another_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testCombineTransformsIdentity(simple_transform, identity_transform):
     combined = TransformUtils.combineTransforms(simple_transform, identity_transform)
     assert np.allclose(
@@ -129,6 +132,7 @@ def testCombineTransformsIdentity(simple_transform, identity_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testCombineTransformsReverse(simple_transform):
     inverted = TransformUtils.invertTransform(simple_transform)
     combined = TransformUtils.combineTransforms(simple_transform, inverted)
@@ -149,6 +153,7 @@ def testCombineTransformsReverse(simple_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testCombineTransformsTwoNonIdentity(simple_transform, another_transform):
     combined = TransformUtils.combineTransforms(simple_transform, another_transform)
     assert isinstance(combined, Transform)
@@ -158,6 +163,7 @@ def testCombineTransformsTwoNonIdentity(simple_transform, another_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testTransformPoseIdentity(simple_pose, identity_transform):
     transformed_pose = TransformUtils.transformPoseToParentFrame(
         simple_pose, identity_transform
@@ -173,6 +179,7 @@ def testTransformPoseIdentity(simple_pose, identity_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testTransformPoseSimple(simple_pose, simple_transform):
     transformed_pose = TransformUtils.transformPoseToParentFrame(
         simple_pose, simple_transform
@@ -188,6 +195,7 @@ def testTransformPoseSimple(simple_pose, simple_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testTransformPoseReverse(simple_pose, simple_transform):
     forward_pose = TransformUtils.transformPoseToParentFrame(
         simple_pose, simple_transform
@@ -203,6 +211,7 @@ def testTransformPoseReverse(simple_pose, simple_transform):
     )
 
 
+@pytest.mark.timeout(5)
 def testPoseToMatrixAndBack(simple_pose):
     matrix = TransformUtils.poseToMatrix(simple_pose)
     pose_reconstructed = TransformUtils.matrixToPose(matrix)
@@ -232,6 +241,7 @@ def testPoseToMatrixAndBack(simple_pose):
     )
 
 
+@pytest.mark.timeout(5)
 def testTransformToMatrixAndBack(simple_transform):
     matrix = TransformUtils.transformToMatrix(simple_transform)
     transform_reconstructed = TransformUtils.matrixToTransform(matrix)

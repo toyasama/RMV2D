@@ -13,6 +13,7 @@ def mockParams():
     return params
 
 
+@pytest.mark.timeout(5)
 def testExtrinsicMatrix(mockParams):
     extrinsics = CameraExtrinsics(mockParams)
     matrix = extrinsics.extrinsic_matrix
@@ -22,6 +23,7 @@ def testExtrinsicMatrix(mockParams):
     np.testing.assert_almost_equal(matrix[:3, 3], np.array([1.0, 2.0, 3.0]))
 
 
+@pytest.mark.timeout(5)
 def testIntrinsicMatrix(mockParams):
     intrinsics = CameraIntrinsics(mockParams)
     matrix = intrinsics.intrinsic_matrix
@@ -42,6 +44,7 @@ def testIntrinsicMatrix(mockParams):
     assert matrix[2, 2] == 1
 
 
+@pytest.mark.timeout(5)
 def testWorldToCamera(mockParams):
     manager = CameraManager(mockParams)
 
@@ -51,6 +54,7 @@ def testWorldToCamera(mockParams):
     assert camera_point.shape == (3,)
 
 
+@pytest.mark.timeout(5)
 def testProjectToImagePointInFront(mockParams):
     manager = CameraManager(mockParams)
 
@@ -63,6 +67,7 @@ def testProjectToImagePointInFront(mockParams):
     assert isinstance(y, int)
 
 
+@pytest.mark.timeout(5)
 def testProjectToImagePointBehind(mockParams, capsys):
     manager = CameraManager(mockParams)
 
@@ -75,6 +80,7 @@ def testProjectToImagePointBehind(mockParams, capsys):
     assert "Point is behind the camera." in captured.out
 
 
+@pytest.mark.timeout(5)
 def testFx(mockParams):
     manager = CameraManager(mockParams)
 
@@ -85,11 +91,13 @@ def testFx(mockParams):
     assert manager.fx == pytest.approx(fx_expected)
 
 
+@pytest.mark.timeout(5)
 def testFov(mockParams):
     manager = CameraManager(mockParams)
     assert manager.fov == pytest.approx(np.deg2rad(mockParams.resolution[2]))
 
 
+@pytest.mark.timeout(5)
 def testCameraDistance(mockParams):
     manager = CameraManager(mockParams)
     assert manager.camera_distance == pytest.approx(3.0)

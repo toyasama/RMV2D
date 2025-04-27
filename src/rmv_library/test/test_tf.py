@@ -32,6 +32,7 @@ def makeTfMessage(num=1):
     return tf_msg
 
 
+@pytest.mark.timeout(5)
 def testInitializationSubscriptions(mock_node, mock_parameters):
     manager = TFManager(mock_node, mock_parameters)
 
@@ -46,6 +47,7 @@ def testInitializationSubscriptions(mock_node, mock_parameters):
     )
 
 
+@pytest.mark.timeout(5)
 def testTfCallbackAddsDynamicTransforms(mock_node, mock_parameters):
     manager = TFManager(mock_node, mock_parameters)
     mock_graph = MagicMock()
@@ -59,6 +61,7 @@ def testTfCallbackAddsDynamicTransforms(mock_node, mock_parameters):
     assert mock_graph.addTransform.call_count == 3
 
 
+@pytest.mark.timeout(5)
 def testTfStaticCallbackAddsStaticTransforms(mock_node, mock_parameters):
     manager = TFManager(mock_node, mock_parameters)
     mock_graph = MagicMock()

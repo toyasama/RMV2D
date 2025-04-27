@@ -75,7 +75,7 @@ class RMVChoreNode(Node):
         }
         projected_markers = []
         for marker in markers:
-            if marker.frame_id == main_frame:
+            if marker.frame_id == main_frame and main_frame is not None:
                 marker.modified_pose = marker.pose
                 projected_markers.append(marker)
             elif marker.frame_id in transform_dict:

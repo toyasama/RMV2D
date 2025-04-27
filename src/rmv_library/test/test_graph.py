@@ -49,6 +49,7 @@ def makeTransform(parent, child, x=0.0, y=0.0, z=0.0, yaw=0.0):
     return t
 
 
+@pytest.mark.timeout(5)
 def testAddAndGetTransform(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
     graph.addTransform(basic_transform)
@@ -59,6 +60,7 @@ def testAddAndGetTransform(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testInverseTransformMsg(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
     inv = graph._inverseTransformMsg(basic_transform)
@@ -67,6 +69,7 @@ def testInverseTransformMsg(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testFramesAndSubframes(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
     graph.addTransform(basic_transform)
@@ -79,6 +82,7 @@ def testFramesAndSubframes(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testComputeTransformInfo(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
     graph.addTransform(basic_transform)
@@ -99,6 +103,7 @@ def testComputeTransformInfo(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testComplexComputeTransformInfo(dummy_params):
     graph = TransformGraph(dummy_params)
 
@@ -125,6 +130,7 @@ def testComplexComputeTransformInfo(dummy_params):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testRemoveExpiredEdges(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
 
@@ -144,6 +150,7 @@ def testRemoveExpiredEdges(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testGetTransformsFromMainFrame(dummy_params, basic_transform):
     graph = TransformGraph(dummy_params)
     graph.addTransform(basic_transform)
@@ -154,6 +161,7 @@ def testGetTransformsFromMainFrame(dummy_params, basic_transform):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testStaticTransformNeverExpires(dummy_params):
     graph = TransformGraph(dummy_params)
 
@@ -168,6 +176,7 @@ def testStaticTransformNeverExpires(dummy_params):
     graph.stop()
 
 
+@pytest.mark.timeout(5)
 def testDynamicTransformExpires(dummy_params):
     graph = TransformGraph(dummy_params)
 
@@ -184,7 +193,8 @@ def testDynamicTransformExpires(dummy_params):
     graph.stop()
 
 
-def test_mixed_static_and_dynamic(dummy_params):
+@pytest.mark.timeout(5)
+def testMixedStaticAndDynamic(dummy_params):
     graph = TransformGraph(dummy_params)
 
     tf_static = makeTransform("world", "static_frame")

@@ -55,7 +55,7 @@ class DrawFrame:
         )
         proj = camera_manager.projectToImage(camera_manager.worldToCamera(frame_pos))
         frames_position = FramesPosition(main_tf, proj, proj_x_end, proj_y_end, 1)
-        if proj.any():
+        if proj != None:
             DrawFrame.drawFrame(image, frames_position, parameters, thickness)
 
     @staticmethod
@@ -106,6 +106,8 @@ class DrawFrame:
         )
         proj = camera_manager.projectToImage(camera_manager.worldToCamera(frame_pos))
 
+        if proj == None:
+            return
         show_one_end = (
             transform_info.transform_name in parameters.frames.sub_frames
             or transform_info.transform_name in parameters.frames.main_frame
@@ -150,10 +152,7 @@ class DrawFrame:
             proj_start_connection,
             proj_end_connection,
         )
-        if proj.any():
-            DrawFrame.drawFrame(image, frames_position, parameters, thickness)
-        else:
-            print("Frame not in view")
+        DrawFrame.drawFrame(image, frames_position, parameters, thickness)
 
     @staticmethod
     def drawFrame(
@@ -177,8 +176,8 @@ class DrawFrame:
             )
 
         if (
-            frames_position.start_connection.any()
-            and frames_position.end_connection.any()
+            frames_position.start_connection != None
+            and frames_position.end_connection != None
         ):
             DrawFrame.drawArrow(
                 image,

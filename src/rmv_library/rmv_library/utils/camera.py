@@ -102,7 +102,7 @@ class CameraManager:
             return None
         pixel_coords = np.dot(self.__intrinsics.intrinsic_matrix, point_camera)
         pixel_coords /= pixel_coords[2]
-        return int(pixel_coords[0]), int(pixel_coords[1])
+        return (int(pixel_coords[0]), int(pixel_coords[1]))
 
     @property
     def fx(self) -> float:

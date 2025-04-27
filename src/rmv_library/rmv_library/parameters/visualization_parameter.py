@@ -151,7 +151,6 @@ class VisualizationParameters:
             if isinstance(r, int):
                 self._background_color["r"] = r
             if isinstance(g, int):
-                print("g")
                 self._background_color["g"] = g
             if isinstance(b, int):
                 self._background_color["b"] = b

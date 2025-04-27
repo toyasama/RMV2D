@@ -4,8 +4,8 @@
   <name>rmv_visualization</name>
   <version>0.0.0</version>
   <description>'Visualization package'</description>
-  <maintainer email="emerytognama@gmail.com">devuser</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="emerytognama@gmail.com">Emery-donald Tognama</maintainer>
+  <license>Copyright (c) 2025 [Tognama Emery-donald]</license>
 
   <depend>rmv_library</depend>
   <depend>image_transport</depend>
@@ -17,5 +17,6 @@
 
   <export>
     <build_type>ament_python</build_type>
+    <test_depend>pytest</test_depend>
   </export>
 </package>

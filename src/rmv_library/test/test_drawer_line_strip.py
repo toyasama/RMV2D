@@ -102,12 +102,14 @@ def dummy_marker_not_enough_points():
     )
 
 
+@pytest.mark.timeout(5)
 def testDrawLineStripVisible(blank_image, camera_manager, dummy_marker_visible):
     LineStripDrawer.drawLineStrip(blank_image, dummy_marker_visible, camera_manager)
 
     assert np.any(np.all(blank_image == [0, 0, 255], axis=-1))
 
 
+@pytest.mark.timeout(5)
 def testDrawLineStripBehindCamera(
     blank_image, camera_manager, dummy_marker_behind_camera
 ):
@@ -118,6 +120,7 @@ def testDrawLineStripBehindCamera(
     assert not np.any(np.all(blank_image == [0, 255, 0], axis=-1))
 
 
+@pytest.mark.timeout(5)
 def testDrawLineStripNotEnoughPoints(
     blank_image, camera_manager, dummy_marker_not_enough_points
 ):

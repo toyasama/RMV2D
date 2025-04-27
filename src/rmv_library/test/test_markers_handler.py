@@ -51,6 +51,7 @@ def expired_marker():
     return marker
 
 
+@pytest.mark.timeout(5)
 def testAddMarkerStoresNonExpiredMarker(mock_node, sample_marker):
     handler = MarkersHandler()
     handler.addMarker(sample_marker)
@@ -61,6 +62,7 @@ def testAddMarkerStoresNonExpiredMarker(mock_node, sample_marker):
     handler.stop()
 
 
+@pytest.mark.timeout(5)
 def testExpiredMarkerIsNotStored(mock_node, expired_marker):
     handler = MarkersHandler()
     handler.addMarker(expired_marker)
@@ -69,6 +71,7 @@ def testExpiredMarkerIsNotStored(mock_node, expired_marker):
     handler.stop()
 
 
+@pytest.mark.timeout(5)
 def testClearMarkersList(mock_node, sample_marker):
     handler = MarkersHandler()
     handler.addMarker(sample_marker)
@@ -79,6 +82,7 @@ def testClearMarkersList(mock_node, sample_marker):
     handler.stop()
 
 
+@pytest.mark.timeout(5)
 def testAddMarkerArrayStoresMarkers(mock_node, sample_marker):
     marker_array = MarkerArray()
     marker_array.markers.append(sample_marker)
@@ -92,6 +96,7 @@ def testAddMarkerArrayStoresMarkers(mock_node, sample_marker):
     handler.stop()
 
 
+@pytest.mark.timeout(5)
 def testAddMultipleMarkers(mock_node, sample_marker):
     handler = MarkersHandler()
 
@@ -119,6 +124,7 @@ def testAddMultipleMarkers(mock_node, sample_marker):
     handler.stop()
 
 
+@pytest.mark.timeout(5)
 def testMergeIdenticalMarkersKeepsLast(mock_node):
     handler = MarkersHandler()
 

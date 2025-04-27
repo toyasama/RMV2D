@@ -14,7 +14,7 @@ from rmv_library.tf_management.transform_rmv import TransformDrawerInfo
 def mock_camera_manager():
     """Create a mock camera manager for testing."""
     camera_manager = Mock(spec=CameraManager)
-    camera_manager.projectToImage.return_value = np.array([100, 100])
+    camera_manager.projectToImage.return_value = (100, 100)
     camera_manager.worldToCamera.return_value = np.array([1, 1, 1])
     return camera_manager
 
@@ -81,18 +81,18 @@ def mock_frames_position():
     """Create a mock FramesPosition for testing."""
     return FramesPosition(
         name="test_frame",
-        start=np.array([100, 100]),
-        end_x=np.array([150, 100]),
-        end_y=np.array([100, 150]),
+        start=(100, 100),
+        end_x=(150, 100),
+        end_y=(100, 150),
         opacity=1.0,
-        start_connection=np.array([80, 80]),
-        end_connection=np.array([120, 120]),
+        start_connection=(80, 80),
+        end_connection=(120, 120),
     )
 
 
 class TestDrawFrame:
-
-    def test_draw_main_frame(self, mock_camera_manager, mock_image, mock_parameters):
+    @pytest.mark.timeout(5)
+    def testDrawMainFrame(self, mock_camera_manager, mock_image, mock_parameters):
         """Test if drawMainFrame correctly projects and draws the main frame."""
         with patch.object(DrawFrame, "drawFrame") as mock_draw_frame:
             DrawFrame.drawMainFrame(
@@ -104,7 +104,8 @@ class TestDrawFrame:
             assert mock_camera_manager.projectToImage.call_count >= 3
             assert mock_camera_manager.worldToCamera.call_count >= 3
 
-    def test_project_and_draw_frame(
+    @pytest.mark.timeout(5)
+    def testProjectAndDrawFrame(
         self, mock_camera_manager, mock_image, mock_transform_info, mock_parameters
     ):
         """Test if projectAndDrawFrame correctly projects and draws a frame."""
@@ -116,23 +117,21 @@ class TestDrawFrame:
             assert mock_camera_manager.projectToImage.call_count >= 3
             assert mock_camera_manager.worldToCamera.call_count >= 3
 
+    @pytest.mark.timeout(5)
     def testProjectAndDrawFrameNotInView(
         self, mock_camera_manager, mock_image, mock_transform_info, mock_parameters
     ):
         """Test behavior when frame is not in view."""
-        mock_camera_manager.projectToImage.return_value = np.array([])
+        mock_camera_manager.projectToImage.return_value = None
 
-        with patch.object(DrawFrame, "drawFrame") as mock_draw_frame, patch(
-            "builtins.print"
-        ) as mock_print:
+        with patch.object(DrawFrame, "drawFrame") as mock_draw_frame:
             DrawFrame.projectAndDrawFrame(
                 mock_camera_manager, mock_image, mock_transform_info, mock_parameters, 2
             )
 
             assert mock_draw_frame.call_count == 0
 
-            mock_print.assert_called_once_with("Frame not in view")
-
+    @pytest.mark.timeout(5)
     def testDrawFrameWithAxes(self, mock_image, mock_frames_position, mock_parameters):
         with patch.object(DrawFrame, "_drawAxes") as mock_draw_axes, patch.object(
             DrawFrame, "drawText"
@@ -144,6 +143,7 @@ class TestDrawFrame:
             assert mock_draw_text.call_count == 1
             assert mock_draw_arrow.call_count == 1
 
+    @pytest.mark.timeout(5)
     def testDrawFrameWithoutAxes(
         self, mock_image, mock_frames_position, mock_parameters
     ):
@@ -159,6 +159,7 @@ class TestDrawFrame:
             assert mock_draw_text.call_count == 1
             assert mock_draw_arrow.call_count == 1
 
+    @pytest.mark.timeout(5)
     def testDrawText(self, mock_image):
         with patch("cv2.putText") as mock_put_text, patch(
             "cv2.getTextSize", return_value=((50, 20), 0)
@@ -175,11 +176,13 @@ class TestDrawFrame:
             assert mock_put_text.call_count == 1
             assert mock_add_weighted.call_count == 1
 
+    @pytest.mark.timeout(5)
     def testDrawGrid(self, mock_image):
         with patch("cv2.line") as mock_line:
             DrawFrame.drawGrid(mock_image, spacing=50)
             assert mock_line.call_count > 0
 
+    @pytest.mark.timeout(5)
     def testDrawAxes(self, mock_image, mock_frames_position):
         with patch.object(DrawFrame, "drawArrow") as mock_draw_arrow:
             DrawFrame._drawAxes(mock_image, mock_frames_position, 1.0, 2)
@@ -192,6 +195,7 @@ class TestDrawFrame:
             args_y = mock_draw_arrow.call_args_list[1][1]
             assert args_y["color"] == (0, 255, 0)
 
+    @pytest.mark.timeout(5)
     def testDrawArrow(self, mock_image):
         """Test the drawArrow method."""
         with patch("cv2.arrowedLine") as mock_arrowed_line, patch(
@@ -237,7 +241,7 @@ class TestDrawFrame:
 
 
 class TestDrawMarkers:
-
+    @pytest.mark.timeout(5)
     def testDrawMarkers(self, mock_image, mock_camera_manager):
         """Test if drawMarkers correctly delegates to the appropriate drawing methods."""
         cube_marker = Mock()
@@ -277,6 +281,7 @@ class TestDrawMarkers:
                 mock_image, line_strip_marker, mock_camera_manager
             )
 
+    @pytest.mark.timeout(5)
     def testDrawCube(self, mock_image, mock_camera_manager):
         """Test if drawCube correctly delegates to the CubeTransformer and CubeDrawer."""
         marker = Mock()
@@ -312,6 +317,7 @@ class TestDrawMarkers:
                 mock_image, ["corner1", "corner2", "corner3", "corner4"], (0, 0, 0)
             )
 
+    @pytest.mark.timeout(5)
     def testDrawSphere(self, mock_image, mock_camera_manager):
         """Test if drawSphere correctly delegates to the SphereDrawer."""
         marker = Mock()
@@ -324,6 +330,7 @@ class TestDrawMarkers:
                 mock_image, marker, mock_camera_manager
             )
 
+    @pytest.mark.timeout(5)
     def testDrawCylinder(self, mock_image, mock_camera_manager):
         """Test if drawCylinder correctly delegates to the CylinderDrawer."""
         marker = Mock()
@@ -336,6 +343,7 @@ class TestDrawMarkers:
                 mock_image, marker, mock_camera_manager
             )
 
+    @pytest.mark.timeout(5)
     def testDrawLineStrip(self, mock_image, mock_camera_manager):
         """Test if drawLineStrip correctly delegates to the LineStripDrawer."""
         marker = Mock()

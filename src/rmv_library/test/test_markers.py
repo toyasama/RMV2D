@@ -48,6 +48,7 @@ def marker(pose):
     return marker
 
 
+@pytest.mark.timeout(5)
 def testMarkerRmvProperties(marker, time):
     rmv = MarkerRmv(marker, time)
 
@@ -61,12 +62,14 @@ def testMarkerRmvProperties(marker, time):
     assert rmv.type == marker.type
 
 
+@pytest.mark.timeout(5)
 def testFrameIdSetter(marker, time):
     rmv = MarkerRmv(marker, time)
     rmv.frame_id = "map"
     assert rmv.frame_id == "map"
 
 
+@pytest.mark.timeout(5)
 def testModifiedPose(marker, time, pose):
     rmv = MarkerRmv(marker, time)
 
@@ -79,22 +82,26 @@ def testModifiedPose(marker, time, pose):
     assert rmv.modified_pose == new_pose
 
 
+@pytest.mark.timeout(5)
 def testGetTransform(marker, time):
     rmv = MarkerRmv(marker, time)
     assert rmv.pose == marker.pose
 
 
+@pytest.mark.timeout(5)
 def testIsExpiredTrue(marker, time, future_time):
     rmv = MarkerRmv(marker, time)
     assert rmv.isExpired(future_time)
 
 
+@pytest.mark.timeout(5)
 def testIsExpiredFalse(marker, time):
     still_valid = Time(sec=time.sec + 3, nanosec=0)
     rmv = MarkerRmv(marker, time)
     assert not rmv.isExpired(still_valid)
 
 
+@pytest.mark.timeout(5)
 def testMarkerRmvEquality(marker, time):
     rmv1 = MarkerRmv(marker, time)
     rmv2 = MarkerRmv(marker, time)

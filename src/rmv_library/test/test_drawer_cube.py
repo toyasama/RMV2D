@@ -91,6 +91,7 @@ def blank_image():
 # ------------------ TESTS CubeTransformer ------------------
 
 
+@pytest.mark.timeout(5)
 def testGetTransformedCorners(sample_marker):
     corners = CubeTransformer.getTransformedCorners(sample_marker)
     assert corners.shape == (8, 3)
@@ -101,6 +102,7 @@ def testGetTransformedCorners(sample_marker):
     )
 
 
+@pytest.mark.timeout(5)
 def testGetTransformedCornersWithRotation(rotated_marker):
     corners = CubeTransformer.getTransformedCorners(rotated_marker)
     assert corners.shape == (8, 3)
@@ -109,6 +111,7 @@ def testGetTransformedCornersWithRotation(rotated_marker):
     np.testing.assert_allclose(center, np.array([1, 2, 3]), atol=1e-6)
 
 
+@pytest.mark.timeout(5)
 def testGetVisibleCorners(sample_camera_manager):
     transformed_corners = np.array(
         [
@@ -133,6 +136,7 @@ def testGetVisibleCorners(sample_camera_manager):
 # ------------------ TESTS CubeDrawer ------------------
 
 
+@pytest.mark.timeout(5)
 def testDrawFaces(blank_image):
     corners = [
         (100, 100),
@@ -149,6 +153,7 @@ def testDrawFaces(blank_image):
     assert np.any(np.all(blank_image == (0, 255, 0), axis=-1))
 
 
+@pytest.mark.timeout(5)
 def testDrawEdges(blank_image):
     corners = [
         (100, 100),

@@ -57,6 +57,7 @@ def yaml_file_path(sample_yaml_data):
     os.remove(tmp_path)
 
 
+@pytest.mark.timeout(5)
 def testDefaultValues(params):
     assert params.main_frame == ""
     assert params.sub_frames == []
@@ -67,11 +68,13 @@ def testDefaultValues(params):
     assert params.axes_length == 0.1
 
 
+@pytest.mark.timeout(5)
 def testMainFrameSetter(params):
     params.main_frame = "world"
     assert params.main_frame == "world"
 
 
+@pytest.mark.timeout(5)
 def testAddSubFrame(params):
     params.addSubFrame("frame1")
     params.addSubFrame("frame2")
@@ -79,52 +82,61 @@ def testAddSubFrame(params):
     assert "frame2" in params.sub_frames
 
 
+@pytest.mark.timeout(5)
 def testRemoveSubFrame(params):
     params.addSubFrame("frame1")
     params.removeSubFrame("frame1")
     assert "frame1" not in params.sub_frames
 
 
+@pytest.mark.timeout(5)
 def testUpdateSubFrame(params):
     params.updateSubFrame(["a", "b", "c"])
     assert params.sub_frames == ["a", "b", "c"]
 
 
+@pytest.mark.timeout(5)
 def testToggleShowAxes(params):
     original = params.show_axes
     params.toggleAxes()
     assert params.show_axes != original
 
 
+@pytest.mark.timeout(5)
 def testToggleShowFrameNames(params):
     original = params.show_frame_names
     params.toggleFrameNames()
     assert params.show_frame_names != original
 
 
+@pytest.mark.timeout(5)
 def testToggleShowConnections(params):
     original = params.show_connections
     params.toggleConnections()
     assert params.show_connections != original
 
 
+@pytest.mark.timeout(5)
 def testToggleShowSubFrames(params):
     original = params.show_sub_frames
     params.toggleSubFrames()
     assert params.show_sub_frames != original
 
 
+@pytest.mark.timeout(5)
 def testSetAxesLength(params):
     params.axes_length = 0.5
     assert params.axes_length == 0.5
 
 
+@pytest.mark.timeout(5)
 def testRejectInvalidAxesLength(params):
     old_value = params.axes_length
     params.axes_length = -1.0
     assert params.axes_length == old_value
 
 
+@pytest.mark.timeout(5)
 def testToDictStructure(params):
     d = params.toDict()
     assert "frames" in d
@@ -133,6 +145,7 @@ def testToDictStructure(params):
     assert d["frames"]["show_axes"] is True
 
 
+@pytest.mark.timeout(5)
 def testDefaultValues(visParams):
     assert visParams.width == 100
     assert visParams.height == 100
@@ -144,11 +157,13 @@ def testDefaultValues(visParams):
     assert visParams.draw_grid is True
 
 
+@pytest.mark.timeout(5)
 def testSetResolution(visParams):
     visParams.setResolution(width=800, height=600, fov=90)
     assert visParams.resolution == (800, 600, 90)
 
 
+@pytest.mark.timeout(5)
 def testSettersWithValidation(visParams):
     visParams.width = -1  # ignored
     visParams.height = -50  # ignored
@@ -159,6 +174,7 @@ def testSettersWithValidation(visParams):
     assert visParams.fps > 0
 
 
+@pytest.mark.timeout(5)
 def testSetIndividualProperties(visParams):
     visParams.width = 200
     visParams.height = 150
@@ -173,27 +189,32 @@ def testSetIndividualProperties(visParams):
     assert visParams.grid_spacing == 2.5
 
 
+@pytest.mark.timeout(5)
 def testToggleDrawGrid(visParams):
     original = visParams.draw_grid
     visParams.toggleDrawGrid()
     assert visParams.draw_grid != original
 
 
+@pytest.mark.timeout(5)
 def testUpdateBackgroundColor(visParams):
     visParams.updateBackgroundColor(r=100, g=150, b=200)
     assert visParams.background_color == {"r": 100, "g": 150, "b": 200}
 
 
+@pytest.mark.timeout(5)
 def testUpdateGridColor(visParams):
     visParams.updateGridColor(r=10, g=20, b=30)
     assert visParams.grid_color == {"r": 10, "g": 20, "b": 30}
 
 
+@pytest.mark.timeout(5)
 def testUpdateCameraPosition(visParams):
     visParams.updateCameraPosition(x=1.5, y=2.5, z=3.5, theta=0.75)
     assert visParams.camera_position == (1.5, 2.5, 3.5, 0.75)
 
 
+@pytest.mark.timeout(5)
 def testUpdateCameraPositionIndividual(visParams):
     visParams.updateCameraPositionX(10.0)
     visParams.updateCameraPositionY(20.0)
@@ -202,11 +223,13 @@ def testUpdateCameraPositionIndividual(visParams):
     assert visParams.camera_position == (10.0, 20.0, 30.0, 1.57)
 
 
+@pytest.mark.timeout(5)
 def testUpdateCameraFOV(visParams):
     visParams.updateCameraFOV(120)
     assert visParams.fov == 120
 
 
+@pytest.mark.timeout(5)
 def testRejectInvalidFOV(visParams):
     old_fov = visParams.fov
     visParams.updateCameraFOV("invalid")
@@ -216,11 +239,13 @@ def testRejectInvalidFOV(visParams):
     assert visParams.fov == old_fov
 
 
+@pytest.mark.timeout(5)
 def testUpdateGridSpacing(visParams):
     visParams.updateGridSpacing(0.5)
     assert visParams.grid_spacing == 0.5
 
 
+@pytest.mark.timeout(5)
 def testToDictStructure(visParams):
     d = visParams.toDict()
     assert "visualizations" in d
@@ -232,6 +257,7 @@ def testToDictStructure(visParams):
     assert v["draw_grid"] == visParams.draw_grid
 
 
+@pytest.mark.timeout(5)
 def testRmvParametersLoading(yaml_file_path):
     rmv = RmvParameters(yaml_file_path)
 
@@ -259,6 +285,7 @@ def testRmvParametersLoading(yaml_file_path):
     assert f.show_sub_frames is False
 
 
+@pytest.mark.timeout(5)
 def testRmvParametersSaveAndReload(yaml_file_path):
     rmv = RmvParameters(yaml_file_path)
 
@@ -277,6 +304,7 @@ def testRmvParametersSaveAndReload(yaml_file_path):
     assert reloaded.frames.show_sub_frames is True
 
 
+@pytest.mark.timeout(5)
 def testMissingFile():
     rmv = RmvParameters("/path/to/nonexistent/file.yaml")
     assert rmv.visualization.width == 100
