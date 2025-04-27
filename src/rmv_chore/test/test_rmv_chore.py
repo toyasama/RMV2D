@@ -44,26 +44,6 @@ def marker(pose):
     return marker
 
 
-@pytest.fixture
-def mockNode():
-    with patch("rmv_library.parameters.params.RmvParameters") as mockParams, patch(
-        "rmv_library.tf_management.tf.TFManager"
-    ) as mockTFManager, patch(
-        "rmv_library.markers_management.marker_handler.MarkersHandler"
-    ) as mockMarkersHandler, patch(
-        "rmv_library.topic_management.topic_manager.TopicManager"
-    ) as mockTopicManager, patch(
-        "rmv_visualization.visualization.Visualization"
-    ) as mockVisualization:
-        yield {
-            "params": mockParams,
-            "tf_manager": mockTFManager,
-            "markers_handler": mockMarkersHandler,
-            "topic_manager": mockTopicManager,
-            "visualization": mockVisualization,
-        }
-
-
 @pytest.fixture(scope="session", autouse=True)
 def rclpy_init_shutdown():
     rclpy.init()
@@ -72,7 +52,7 @@ def rclpy_init_shutdown():
 
 
 @pytest.fixture
-def rmv_chore_node(mockNode):
+def rmv_chore_node():
     with patch("rclpy.node.Node.create_timer"), patch("rclpy.node.Node.get_logger"):
         node = RMVChoreNode()
         yield node
