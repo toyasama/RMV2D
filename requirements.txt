@@ -1,6 +1,6 @@
 argparse
 networkx
-numpy
+numpy==1.21.5
 matplotlib 
 pyyaml 
 opencv-python 
