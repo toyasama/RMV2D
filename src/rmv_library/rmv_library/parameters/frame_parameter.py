@@ -74,6 +74,13 @@ class FramesParameters:
         with self._locks["show_sub_frames"]:
             return self._show_sub_frames
 
+    @show_sub_frames.setter
+    def show_sub_frames(self, value: bool) -> None:
+        with self._locks["show_sub_frames"]:
+            if not isinstance(value, bool):
+                return
+            self._show_sub_frames = value
+
     @property
     def main_frame(self) -> str:
         with self._locks["main_frame"]:
@@ -89,25 +96,17 @@ class FramesParameters:
         with self._locks["sub_frames"]:
             return self._sub_frames.copy()
 
-    def addSubFrame(self, frame_name: str) -> None:
-        with self._locks["sub_frames"]:
-            if frame_name not in self._sub_frames:
-                print("Adding sub frame ", frame_name)
-                self._sub_frames.append(frame_name)
-
-    def removeSubFrame(self, frame_name: str) -> None:
-        with self._locks["sub_frames"]:
-            if frame_name in self._sub_frames:
-                self._sub_frames.remove(frame_name)
-
-    def updateSubFrame(self, frame_list: list) -> None:
-        with self._locks["sub_frames"]:
-            self._sub_frames = frame_list
-
     @property
     def show_axes(self) -> bool:
         with self._locks["show_axes"]:
             return self._show_axes
+
+    @show_axes.setter
+    def show_axes(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            return
+        with self._locks["show_axes"]:
+            self._show_axes = value
 
     def toggleAxes(self) -> None:
         with self._locks["show_axes"]:
@@ -118,6 +117,13 @@ class FramesParameters:
         with self._locks["show_frame_names"]:
             return self._show_frame_names
 
+    @show_frame_names.setter
+    def show_frame_names(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            return
+        with self._locks["show_frame_names"]:
+            self._show_frame_names = value
+
     def toggleFrameNames(self) -> None:
         with self._locks["show_frame_names"]:
             self._show_frame_names = not self._show_frame_names
@@ -126,6 +132,13 @@ class FramesParameters:
     def show_connections(self) -> bool:
         with self._locks["show_connections"]:
             return self._show_connections
+
+    @show_connections.setter
+    def show_connections(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            return
+        with self._locks["show_connections"]:
+            self._show_connections = value
 
     def toggleConnections(self) -> None:
         with self._locks["show_connections"]:
@@ -148,3 +161,50 @@ class FramesParameters:
 
     def toDict(self) -> dict[str, Any]:
         return self.__dict__()
+
+    def updateFromDict(self, data: dict[str, Any]) -> None:
+        """
+        Update all parameters from a dictionary if keys match properties.
+        """
+        for key, value in data.items():
+            attr_name = f"_{key}"
+            print(f"Updating {attr_name} to {value}")
+            if hasattr(self, attr_name):
+                lock = self._locks.get(key)
+                if lock:
+                    with lock:
+                        print(f"Updating {attr_name} to {value}")
+                        setattr(self, attr_name, value)
+            elif key == "sub_frames" and isinstance(value, list):
+                print("Updating sub frames to ", value)
+                self.updateSubFrame(value)
+
+    def addSubFrame(self, frame_name: str) -> None:
+        with self._locks["sub_frames"]:
+            if frame_name not in self._sub_frames:
+                print("Adding sub frame ", frame_name)
+                self._sub_frames.append(frame_name)
+
+    def removeSubFrame(self, frame_name: str) -> None:
+        with self._locks["sub_frames"]:
+            if frame_name in self._sub_frames:
+                self._sub_frames.remove(frame_name)
+
+    def updateSubFrame(self, frame_list: list) -> None:
+        with self._locks["sub_frames"]:
+            self._sub_frames = frame_list
+
+    def updateByKeyPath(self, parts: list[str], value: Any) -> None:
+        if not parts:
+            raise ValueError("Empty key path")
+
+        key = parts[0]
+        if key == "sub_frames":
+            if isinstance(value, list):
+                self.updateSubFrame(value)
+            elif isinstance(value, str):
+                self.addSubFrame(value)
+        elif hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Invalid frames key path: {'.'.join(parts)}")

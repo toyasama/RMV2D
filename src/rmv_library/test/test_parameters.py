@@ -326,7 +326,100 @@ def testRmvParametersSaveAndReload(yaml_file_path):
     assert reloaded.frames.show_sub_frames is True
 
 
-@pytest.mark.timeout(5)
 def testMissingFile():
-    rmv = RmvParameters("/path/to/nonexistent/file.yaml")
-    assert rmv.visualization.width == 100
+    raised_error = False
+    try:
+        rmv = RmvParameters("/path/to/nonexistent/file.yaml")
+    except FileNotFoundError:
+        raised_error = True
+    assert raised_error
+
+
+def testUpdateVackgroundColorB(yaml_file_path):
+    rmv = RmvParameters(yaml_file_path)
+    rmv.updateByKeyPath("visualizations.background_color.b", 25)
+    assert rmv.visualization.background_color["b"] == 25
+
+
+def testUpdateCameraPositionZ(yaml_file_path):
+    rmv = RmvParameters(yaml_file_path)
+    rmv.updateByKeyPath("visualizations.camera.position.z", 3.5)
+    assert rmv.visualization.camera_position[2] == 3.5
+
+
+def testFpdateFov(yaml_file_path):
+    rmv = RmvParameters(yaml_file_path)
+    rmv.updateByKeyPath("visualizations.camera.fov_deg", 120)
+    assert rmv.visualization.fov == 120
+
+
+def testUpdateMainFrame(yaml_file_path):
+    rmv = RmvParameters(yaml_file_path)
+    rmv.updateByKeyPath("frames.main_frame", "map")
+    assert rmv.frames.main_frame == "map"
+
+
+def testUpdateShowAxesToggle(yaml_file_path):
+    rmv = RmvParameters(yaml_file_path)
+    rmv.updateByKeyPath("frames.show_axes", False)
+    assert rmv.frames.show_axes is False
+
+
+def testFramesSetMainFrame():
+    frames = FramesParameters()
+    frames.updateByKeyPath(["main_frame"], "robot")
+    assert frames.main_frame == "robot"
+
+
+def testFramesAddSingleSubFrame():
+    frames = FramesParameters()
+    frames.updateByKeyPath(["sub_frames"], "camera")
+    assert "camera" in frames.sub_frames
+
+
+def testFramesUpdateSubFrameList():
+    frames = FramesParameters()
+    frames.updateByKeyPath(["sub_frames"], ["base", "sensor"])
+    assert frames.sub_frames == ["base", "sensor"]
+
+
+def testFramesToggleShowConnections():
+    frames = FramesParameters()
+    frames.updateByKeyPath(["show_connections"], False)
+    assert frames.show_connections is False
+
+
+def testFramesInvalidKeyPath():
+    frames = FramesParameters()
+    with pytest.raises(KeyError):
+        frames.updateByKeyPath(["nonexistent_key"], True)
+
+
+def testVizUpdateGridColorR():
+    viz = VisualizationParameters()
+    viz.updateByKeyPath(["grid_color", "r"], 100)
+    assert viz.grid_color["r"] == 100
+
+
+def testVizUpdateCameraPositionY():
+    viz = VisualizationParameters()
+    viz.updateByKeyPath(["camera", "position", "y"], 2.2)
+    assert viz.camera_position[1] == 2.2
+
+
+def testVizSetFps():
+    viz = VisualizationParameters()
+    viz.updateByKeyPath(["fps"], 20)
+    assert viz.fps == 20
+
+
+def testVizInvalidKeyPath():
+    viz = VisualizationParameters()
+    with pytest.raises(KeyError):
+        viz.updateByKeyPath(["nonexistent", "value"], 10)
+
+
+def testVizUpdateCameraFov():
+    viz = VisualizationParameters()
+    viz.updateByKeyPath(["camera", "fov_deg"], 90)
+    assert viz.fov == 90

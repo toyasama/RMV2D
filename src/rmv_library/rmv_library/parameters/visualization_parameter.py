@@ -147,6 +147,9 @@ class VisualizationParameters:
     def updateBackgroundColor(
         self, r: int | None = None, g: int | None = None, b: int | None = None
     ) -> None:
+        r = int(r) if isinstance(r, (str, float)) else r
+        g = int(g) if isinstance(g, (str, float)) else g
+        b = int(b) if isinstance(b, (str, float)) else b
         with self._locks["background_color"]:
             if isinstance(r, int):
                 self._background_color["r"] = r
@@ -169,6 +172,10 @@ class VisualizationParameters:
         z: float | None = None,
         theta: float | None = None,
     ) -> None:
+        x = float(x) if isinstance(x, str) else x
+        y = float(y) if isinstance(y, str) else y
+        z = float(z) if isinstance(z, str) else z
+        theta = float(theta) if isinstance(theta, str) else theta
         with self._locks["camera"]:
             if x is not None:
                 self._camera["position"]["x"] = x
@@ -264,6 +271,9 @@ class VisualizationParameters:
     def updateGridColor(
         self, r: int | None = None, g: int | None = None, b: int | None = None
     ) -> None:
+        r = int(r) if isinstance(r, (str, float)) else r
+        g = int(g) if isinstance(g, (str, float)) else g
+        b = int(b) if isinstance(b, (str, float)) else b
         with self._locks["grid_color"]:
             if isinstance(r, int):
                 self._grid_color["r"] = r
@@ -287,3 +297,52 @@ class VisualizationParameters:
 
     def toDict(self) -> dict[str, Any]:
         return self.__dict__()
+
+    def updateFromDict(self, data: dict[str, Any]) -> None:
+        """
+        Update all visualization parameters from a dictionary if keys match properties.
+        """
+        for key, value in data.items():
+            attr_name = f"_{key}"
+
+            if hasattr(self, attr_name):
+                lock = self._locks.get(key)
+                if lock:
+                    with lock:
+                        setattr(self, attr_name, value)
+
+            elif key == "background_color" and isinstance(value, dict):
+                self.updateBackgroundColor(**value)
+
+            elif key == "grid_color" and isinstance(value, dict):
+                self.updateGridColor(**value)
+
+            elif key == "camera" and isinstance(value, dict):
+                if "position" in value:
+                    self.updateCameraPosition(**value["position"])
+                if "fov_deg" in value:
+                    self.updateCameraFOV(value["fov_deg"])
+
+    def updateByKeyPath(self, parts: list[str], value: Any) -> None:
+        if not parts:
+            raise ValueError("Empty key path")
+
+        key = parts[0]
+        if key in ("background_color", "grid_color", "camera") and len(parts) >= 2:
+            sub_key = parts[1]
+            if key == "background_color":
+                self.updateBackgroundColor(**{sub_key: value})
+            elif key == "grid_color":
+                self.updateGridColor(**{sub_key: value})
+            elif key == "camera":
+                if sub_key == "fov_deg":
+                    self.updateCameraFOV(value)
+                elif sub_key == "position" and len(parts) == 3:
+                    pos_key = parts[2]
+                    self.updateCameraPosition(**{pos_key: value})
+                else:
+                    raise KeyError(f"Invalid camera key path: {'.'.join(parts)}")
+        elif hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Invalid visualization key path: {'.'.join(parts)}")

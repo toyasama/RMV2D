@@ -2,6 +2,7 @@
     "python.analysis.extraPaths": [
         "/home/devuser/workspace/build/rmv_visualization",
         "/home/devuser/workspace/install/rmv_visualization/lib/python3.10/site-packages",
+        "/home/devuser/workspace/install/rmv_msgs/local/lib/python3.10/dist-packages",
         "/home/devuser/workspace/build/rmv_chore",
         "/home/devuser/workspace/install/rmv_chore/lib/python3.10/site-packages",
         "/home/devuser/workspace/build/rmv_library",
@@ -18,3 +19,18 @@
         "/home/devuser/.local/lib/python3.10/site-packages",
     ]
 }
+// /home/devuser/workspace/build/rmv_visualization
+// /home/devuser/workspace/install/rmv_visualization/lib/python3.10/site-packages
+// /home/devuser/workspace/install/rmv_msgs/local/lib/python3.10/dist-packages
+// /home/devuser/workspace/build/rmv_chore
+// /home/devuser/workspace/install/rmv_chore/lib/python3.10/site-packages
+// /home/devuser/workspace/build/rmv_library
+// /home/devuser/workspace/install/rmv_library/lib/python3.10/site-packages
+// /opt/ros/humble/lib/python3.10/site-packages
+// /opt/ros/humble/local/lib/python3.10/dist-packages
+// /usr/lib/python310.zip
+// /usr/lib/python3.10
+// /usr/lib/python3.10/lib-dynload
+// /home/devuser/.local/lib/python3.10/site-packages
+// /usr/local/lib/python3.10/dist-packages
+// /usr/lib/python3/dist-packages

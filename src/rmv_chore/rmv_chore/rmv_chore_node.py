@@ -34,13 +34,14 @@ from rmv_library import (
     TransformUtils,
 )
 from rmv_visualization.visualization import Visualization
+from rmv_msgs.srv import UpdateParams
 
 
 class RMVChoreNode(Node):
-    def __init__(self):
+    def __init__(self, config_name="params.yml"):
         super().__init__("rmv_chore", namespace="rmv")
-        paremeter_file = self.getParametersFile()
-        self.parameters = RmvParameters(str(paremeter_file))
+        paremeter_file = self.getParametersFile(config_name)
+        self.parameters: RmvParameters = RmvParameters(str(paremeter_file))
         self.tf_manager = TFManager(self, self.parameters)
         self.markers_handler = MarkersHandler()
         self.destroyed = False
@@ -48,11 +49,33 @@ class RMVChoreNode(Node):
         self.topic_manager = TopicManager(self, self.markers_handler)
         self.period = 1 / self.parameters.visualization.fps
         self.create_timer(self.period, self.visualize)
+        self.declare_service()
         self.get_logger().info("RMV Chore node initialized successfully.")
 
-    def getParametersFile(self):
+    def declare_service(self):
+        self.srv = self.create_service(
+            UpdateParams, "update_params", self._updateParamsSrv
+        )
+
+    def _updateParamsSrv(self, req: UpdateParams.Request, rep: UpdateParams.Response):
+        success = True
+        try:
+            for key, value in req.params.items():
+                try:
+                    self.parameters.updateByKeyPath(key, value)
+                except Exception as e:
+                    success = False
+                    rep._message = f"Error updating parameter {key}: {e}"
+            rep.success = success
+            return rep
+        except Exception as e:
+            self.get_logger().error(f"Error updating parameters: {e}")
+            rep.message = f"Error updating parameters: {e}"
+            return rep
+
+    def getParametersFile(self, config_name):
         return os.path.join(
-            get_package_share_directory("rmv_chore"), "config", "params.yml"
+            get_package_share_directory("rmv_chore"), "config", config_name
         )
 
     def stop(self):

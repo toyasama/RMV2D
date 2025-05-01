@@ -76,7 +76,7 @@ def rclpy_init_shutdown():
 @pytest.fixture
 def rmv_chore_node():
     with patch("rclpy.node.Node.create_timer"), patch("rclpy.node.Node.get_logger"):
-        node = RMVChoreNode()
+        node = RMVChoreNode(config_name="test_params.yml")
         yield node
         if not node.destroyed:
             node.stop()
