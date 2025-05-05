@@ -2,15 +2,14 @@
 FROM osrf/ros:humble-desktop
 
 # Python and system dependencies
-RUN rm -rf /var/lib/apt/lists/* && apt-get update
-
-RUN apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y \
     python3-pip \
     git \
     build-essential \
     ros-humble-rmw-cyclonedds-cpp \
     sudo && \
-    apt-get clean
+    rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install git+https://github.com/DLu/tf_transformations.git
 
@@ -53,4 +52,4 @@ RUN echo "source /setup.sh" >> /home/$USERNAME/.bashrc
 
 USER $USERNAME
 
-CMD ["bash"]
+CMD ["sleep", "infinity"]
