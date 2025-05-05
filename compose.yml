@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: rmv2d:latest
+    container_name: rmv2d_container
+    volumes:
+      - .:/home/devuser/workspace:cached
+    network_mode: host
+    working_dir: /home/devuser/workspace
+    entrypoint: [ "./entry.sh" ]
