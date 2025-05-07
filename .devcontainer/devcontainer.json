@@ -1,10 +1,10 @@
 {
     "name": "RMV2D",
     "build": {
-        "dockerfile": "../docker/Dockerfile",
+        "dockerfile": "./Dockerfile",
         "context": "..",
         "options": [
-            "--tag=rmv2d:latest"
+            "--tag=rmv2d_code:latest"
         ]
     },
     "customizations": {

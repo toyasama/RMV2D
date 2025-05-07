@@ -45,24 +45,11 @@ RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
     echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc && \
     echo "export CYCLONEDDS_URI=file:///etc/cyclonedds.xml" >> ~/.bashrc
 
-#Setup workspace
 COPY setup.sh /setup.sh
-COPY entrypoint.sh /home/devuser/workspace/entrypoint.sh
-
 USER root 
 RUN chmod +x /setup.sh
 RUN echo "source /setup.sh" >> /home/$USERNAME/.bashrc
-RUN chmod +x /home/devuser/workspace/entrypoint.sh
-
-COPY src /home/$USERNAME/workspace/src
-USER root
-RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/workspace
 
 USER $USERNAME
-WORKDIR /home/$USERNAME/workspace
-RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
-RUN echo "source /home/$USERNAME/workspace/install/setup.bash" >> /home/$USERNAME/.bashrc
 
-WORKDIR /home/$USERNAME/workspace/src
-ENTRYPOINT ["/home/devuser/workspace/entrypoint.sh"]
-CMD ["ros2", "run", "rmv_chore", "rmv_chore"]
+CMD ["sleep", "infinity"]

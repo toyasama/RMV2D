@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    image: rmv2d:latest
+    container_name: rmv2d
+    network_mode: host
