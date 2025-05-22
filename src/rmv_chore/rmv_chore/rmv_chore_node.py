@@ -34,7 +34,8 @@ from rmv_library import (
     TransformUtils,
 )
 from rmv_visualization.visualization import Visualization
-from rmv_msgs.srv import UpdateParams
+from rmv_msgs.srv import UpdateParams, GetParams
+import json
 
 
 class RMVChoreNode(Node):
@@ -53,8 +54,11 @@ class RMVChoreNode(Node):
         self.get_logger().info("RMV Chore node initialized successfully.")
 
     def declare_service(self):
-        self.srv = self.create_service(
+        self.update_params_srv = self.create_service(
             UpdateParams, "update_params", self._updateParamsSrv
+        )
+        self.get_params_srv = self.create_service(
+            GetParams, "get_params", self._getParamsSrv
         )
 
     def _updateParamsSrv(self, req: UpdateParams.Request, rep: UpdateParams.Response):
@@ -72,6 +76,10 @@ class RMVChoreNode(Node):
             self.get_logger().error(f"Error updating parameters: {e}")
             rep.message = f"Error updating parameters: {e}"
             return rep
+
+    def _getParamsSrv(self, req: GetParams.Request, rep: GetParams.Response):
+        rep.dict_as_string = self.parameters.__str__()
+        return rep
 
     def getParametersFile(self, config_name):
         return os.path.join(
