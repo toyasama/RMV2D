@@ -27,6 +27,7 @@ from typing import Any
 from .frame_parameter import FramesParameters
 from .visualization_parameter import VisualizationParameters
 from .yaml_handler import YamlHandler
+import json
 
 
 @dataclass
@@ -50,6 +51,11 @@ class RmvParameters:
 
         self._update_visualization(visualization_data)
         self._update_frames(frames_data)
+
+    def __str__(self) -> str:
+        dict = self.visualization.toDict()
+        dict.update(self.frames.toDict())
+        return json.dumps(dict)
 
     def update(self, data: dict[str, Any]) -> None:
         """Update parameters from a dictionary."""

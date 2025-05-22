@@ -11,6 +11,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 set (SRV_FILES
   "srv/UpdateParams.srv"
+  "srv/GetParams.srv"
 )
 
 set(MSG_FILES
